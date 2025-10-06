@@ -6,3 +6,5 @@ export const initializeMiddlewares = (app: Express) => {
   initializeSession(app);
   initializePassport(app);
 };
+
+export * as authMiddleware from "./auth-middleware";
