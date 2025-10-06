@@ -1,0 +1,45 @@
+{
+  "name": "file-uploader",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node src/index.ts",
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/michalwachowicz/file-uploader.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/michalwachowicz/file-uploader/issues"
+  },
+  "homepage": "https://github.com/michalwachowicz/file-uploader#readme",
+  "dependencies": {
+    "@prisma/client": "^6.16.3",
+    "@quixo3/prisma-session-store": "^3.1.13",
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.2.3",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "express-session": "^1.18.2",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/ejs": "^3.1.5",
+    "@types/express": "^5.0.3",
+    "@types/express-session": "^1.18.2",
+    "@types/node": "^24.7.0",
+    "@types/passport": "^1.0.17",
+    "@types/passport-local": "^1.0.38",
+    "prisma": "^6.16.3",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.9.3"
+  }
+}
