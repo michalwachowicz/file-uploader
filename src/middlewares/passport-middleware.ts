@@ -3,11 +3,11 @@ import { Express } from "express";
 import { Strategy as LocalStrategy } from "passport-local";
 import passport from "passport";
 import UserService from "../services/user-service";
-import { User as PrismaUser } from "@prisma/client";
+import { UserWithFoldersAndFiles } from "../types/user";
 
 declare global {
   namespace Express {
-    interface User extends PrismaUser {}
+    interface User extends UserWithFoldersAndFiles {}
   }
 }
 

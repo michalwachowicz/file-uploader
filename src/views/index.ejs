@@ -6,15 +6,65 @@
     <title>File Uploader</title>
   </head>
   <body>
-    <h1>File Uploader</h1>
+    <header>
+      <h1>File Uploader</h1>
+      <form action="/auth/logout" method="post">
+        <button type="submit" aria-label="Logout">Logout</button>
+      </form>
+    </header>
 
-    <% if (isAuthenticated) { %>
-    <h2>Welcome, <%= user.username %></h2>
-    <form action="/auth/logout" method="post">
-      <button type="submit">Logout</button>
-    </form>
-    <% } else { %>
-    <h2>Please <a href="/auth/login">login</a> to continue</h2>
-    <% } %>
+    <main>
+      <aside>
+        <button>New</button>
+
+        <ul>
+          <li>
+            <details open>
+              <summary><a href="/"><%= user.username %>'s drive</a></summary>
+              <% if (allFolders && allFolders.length > 0) { %>
+                <ul>
+                  <% for (const folder of allFolders) { %>
+                    <%- include('partials/folder-tree', { node: folder }) %>
+                  <% } %>
+                </ul>
+              <% } %>
+            </details>
+          </li>
+        </ul>
+      </aside>
+
+      <section>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Date modified</th>
+              <th>File size</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (folders && folders.length > 0) { %>
+              <% for (const folder of folders) { %>
+                <tr>
+                  <td><%= folder.name %></td>
+                  <td><%= new Date(folder.updatedAt).toLocaleString() %></td>
+                  <td>-</td>
+                </tr>
+              <% } %>
+            <% } %>
+
+            <% if (files && files.length > 0) { %>
+              <% for (const file of files) { %>
+                <tr>
+                  <td><%= file.name %></td>
+                  <td><%= new Date(file.updatedAt).toLocaleString() %></td>
+                  <td><%= file.sizeBytes != null ? file.sizeBytes : '-' %></td>
+                </tr>
+              <% } %>
+            <% } %>
+          </tbody>
+        </table>
+      </section>
+    </main>
   </body>
 </html>

@@ -1,12 +1,19 @@
 import prisma from "../prisma";
 import { User } from "@prisma/client";
+import { UserWithFoldersAndFiles } from "../types/user";
 
 type CreateUserDto = Omit<User, "id" | "createdAt" | "updatedAt">;
 type UpdateUserDto = Partial<CreateUserDto>;
 
 class UserService {
-  async getUserById(id: string): Promise<User | null> {
-    return await prisma.user.findUnique({ where: { id } });
+  async getUserById(id: string): Promise<UserWithFoldersAndFiles | null> {
+    return await prisma.user.findUnique({
+      where: { id },
+      include: {
+        folders: { where: { parentId: null } },
+        files: { where: { folderId: null } },
+      },
+    });
   }
 
   async getUserByUsername(username: string): Promise<User | null> {
