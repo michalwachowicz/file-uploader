@@ -7,5 +7,20 @@
   </head>
   <body>
     <h1>Register</h1>
+
+    <form action="/auth/register" method="post">
+      <label for="username">Username</label>
+      <input type="text" name="username" />
+
+      <label for="password">Password</label>
+      <input type="password" name="password" />
+
+      <label for="passwordConfirm">Confirm Password</label>
+      <input type="password" name="passwordConfirm" />
+
+      <button type="submit">Register</button>
+    </form>
+
+    <div>Already have an account? <a href="/auth/login">Login</a></div>
   </body>
 </html>
