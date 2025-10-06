@@ -1,0 +1,14 @@
+<li>
+  <% if (node.subfolders && node.subfolders.length) { %>
+    <details>
+      <summary><a href="/folder/<%= node.id %>"><%= node.name %></a></summary>
+      <ul>
+        <% for (const child of node.subfolders) { %>
+          <%- include('folder-tree', { node: child }) %>
+        <% } %>
+      </ul>
+    </details>
+  <% } else { %>
+    <a href="/folder/<%= node.id %>"><%= node.name %></a>
+  <% } %>
+</li>
