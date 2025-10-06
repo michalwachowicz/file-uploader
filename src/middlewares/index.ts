@@ -1,6 +1,8 @@
 import { Express } from "express";
-import initializeSessionMiddleware from "./session-middleware";
+import initializeSession from "./session-middleware";
+import initializePassport from "./passport-middleware";
 
 export const initializeMiddlewares = (app: Express) => {
-  initializeSessionMiddleware(app);
+  initializeSession(app);
+  initializePassport(app);
 };
