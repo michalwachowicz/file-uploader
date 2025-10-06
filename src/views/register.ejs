@@ -9,14 +9,9 @@
     <h1>Register</h1>
 
     <form action="/auth/register" method="post">
-      <label for="username">Username</label>
-      <input type="text" name="username" />
-
-      <label for="password">Password</label>
-      <input type="password" name="password" />
-
-      <label for="passwordConfirm">Confirm Password</label>
-      <input type="password" name="passwordConfirm" />
+      <%- include("partials/field", { name: "username", label: "Username", errors: locals.errors }) %>
+      <%- include("partials/field", { name: "password", label: "Password", type: "password", errors: locals.errors }) %>
+      <%- include("partials/field", { name: "passwordConfirm", label: "Confirm Password", type: "password", errors: locals.errors }) %>
 
       <button type="submit">Register</button>
     </form>
