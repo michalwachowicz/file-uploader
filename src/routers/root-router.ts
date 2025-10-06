@@ -1,8 +1,9 @@
 import { Router } from "express";
-import { getIndex } from "../controllers/root-controller";
+import { rootController } from "../controllers";
+import { authMiddleware } from "../middlewares";
 
 const router = Router();
 
-router.get("/", getIndex);
+router.get("/", authMiddleware.checkAuth, rootController.getIndex);
 
 export default router;
