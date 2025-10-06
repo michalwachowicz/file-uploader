@@ -1,6 +1,7 @@
 import path from "path";
 import express from "express";
 import config from "./config";
+import { initializeMiddlewares } from "./middlewares";
 
 const app = express();
 
@@ -9,6 +10,8 @@ app.use(express.urlencoded({ extended: true }));
 
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
+
+initializeMiddlewares(app);
 
 app.listen(config.port, () => {
   console.log(`Server is running on port ${config.port}`);
