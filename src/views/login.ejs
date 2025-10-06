@@ -9,11 +9,12 @@
     <h1>Login</h1>
 
     <form action="/auth/login" method="post">
-      <label for="username">Username</label>
-      <input type="text" name="username" />
+      <%- include("partials/field", { name: "username", label: "Username", errors: locals.errors }) %>
+      <%- include("partials/field", { name: "password", label: "Password", type: "password", errors: locals.errors }) %>
 
-      <label for="password">Password</label>
-      <input type="password" name="password" />
+      <% if (locals.errors && locals.errors._error) { %>
+        <div class="error"><%= locals.errors._error %></div>
+      <% } %>
 
       <button type="submit">Login</button>
     </form>

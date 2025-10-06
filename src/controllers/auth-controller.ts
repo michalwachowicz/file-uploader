@@ -3,6 +3,9 @@ import passport from "passport";
 import bcrypt from "bcrypt";
 import render from "../utils/renderer";
 import UserService from "../services/user-service";
+import { registerSchema, loginSchema } from "../schemas/auth-schemas";
+import { formatZodErrors } from "../utils/zod-formatter";
+import { User } from "@prisma/client";
 
 export async function getLogin(_: Request, res: Response) {
   render("login", res);
@@ -17,22 +20,43 @@ export async function postLogin(
   res: Response,
   next: NextFunction
 ) {
-  passport.authenticate("local", {
-    successRedirect: "/",
-    failureRedirect: "/auth/login",
-  })(req, res, next);
+  const { error } = loginSchema.safeParse(req.body);
+
+  if (error) {
+    return render("login", res, req, { errors: formatZodErrors(error) });
+  }
+
+  passport.authenticate(
+    "local",
+    (err: Error | null, user: User | false, info: { message: string }) => {
+      if (err) return next(err);
+
+      if (!user) {
+        return render("login", res, req, {
+          status: 401,
+          errors: { _error: info?.message || "Invalid credentials" },
+          values: req.body,
+        });
+      }
+
+      req.logIn(user, (loginErr) => {
+        if (loginErr) return next(loginErr);
+        return res.redirect("/");
+      });
+    }
+  )(req, res, next);
 }
 
 export async function postRegister(req: Request, res: Response) {
-  const { username, password, passwordConfirm } = req.body;
+  const { username, password } = req.body;
+  const { error } = registerSchema.safeParse(req.body);
+  const errors = error ? formatZodErrors(error) : {};
 
   const user = await UserService.getUserByUsername(username);
-  if (user) {
-    return res.status(400).json({ message: "Username already exists" });
-  }
+  if (user) errors.username = "Username already exists";
 
-  if (password !== passwordConfirm) {
-    return res.status(400).json({ message: "Passwords do not match" });
+  if (Object.keys(errors).length > 0) {
+    return render("register", res, req, { errors });
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -46,10 +70,7 @@ export async function postRegister(req: Request, res: Response) {
 
 export async function postLogout(req: Request, res: Response) {
   req.logout((err) => {
-    if (err) {
-      return res.status(500).json({ message: "Failed to logout" });
-    }
-
+    if (err) return res.status(500).json({ message: "Failed to logout" });
     res.redirect("/");
   });
 }
