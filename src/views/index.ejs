@@ -17,20 +17,7 @@
       <aside>
         <button>New</button>
 
-        <ul>
-          <li>
-            <details open>
-              <summary><a href="/"><%= user.username %>'s drive</a></summary>
-              <% if (allFolders && allFolders.length > 0) { %>
-                <ul>
-                  <% for (const folder of allFolders) { %>
-                    <%- include('partials/folder-tree', { node: folder, folderPath: typeof folderPath !== 'undefined' ? folderPath : [] }) %>
-                  <% } %>
-                </ul>
-              <% } %>
-            </details>
-          </li>
-        </ul>
+        <%- include('partials/folder-tree', { isRoot: true, allFolders, folderPath: typeof folderPath !== 'undefined' ? folderPath : [] }) %>
       </aside>
 
       <section>

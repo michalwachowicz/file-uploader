@@ -1,14 +1,47 @@
-<li>
-  <% if (node.subfolders && node.subfolders.length) { %>
-    <details data-folder-id="<%= node.id %>">
-      <summary><a href="/folder/<%= node.id %>"><%= node.name %></a></summary>
-      <ul>
-        <% for (const child of node.subfolders) { %>
-          <%- include('folder-tree', { node: child, folderPath: typeof folderPath !== 'undefined' ? folderPath : [] }) %>
+<% if (typeof isRoot !== 'undefined' && isRoot) { %>
+  <ul>
+    <li>
+      <details open>
+        <summary>
+          <a href="/"><%= user.username %>'s drive</a>
+        </summary>
+
+        <% if (allFolders && allFolders.length > 0) { %>
+          <ul>
+            <% for (const folder of allFolders) { %>
+              <%- include('folder-tree', {
+                  isRoot: false,
+                  node: folder,
+                  folderPath: typeof folderPath !== 'undefined' ? folderPath : [],
+                }
+              ) %>
+            <% } %>
+          </ul>
         <% } %>
-      </ul>
-    </details>
-  <% } else { %>
-    <a href="/folder/<%= node.id %>"><%= node.name %></a>
-  <% } %>
-</li>
+      </details>
+    </li>
+  </ul>
+<% } else { %>
+  <li>
+    <% if (node.subfolders && node.subfolders.length) { %>
+      <details data-folder-id="<%= node.id %>">
+        <summary>
+          <a href="/folder/<%= node.id %>"><%= node.name %></a>
+        </summary>
+
+        <ul>
+          <% for (const child of node.subfolders) { %>
+            <%- include('folder-tree', {
+                isRoot: false,
+                node: child,
+                folderPath: typeof folderPath !== 'undefined' ? folderPath : [],
+              }
+            ) %>
+          <% } %>
+        </ul>
+      </details>
+    <% } else { %>
+      <a href="/folder/<%= node.id %>"><%= node.name %></a>
+    <% } %>
+  </li>
+<% } %>
