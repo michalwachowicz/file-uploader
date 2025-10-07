@@ -20,30 +20,10 @@
       </aside>
 
       <section>
-        <%- include('partials/breadcrumbs', { breadcrumbs }) %>
+        <%- include('partials/breadcrumbs', { breadcrumbs: locals.breadcrumbs }) %>
         <%- include('partials/folder-table', { folders, files }) %>
       </section>
     </main>
-
-    <% if (locals.folderPath && locals.folderPath.length > 0) { %>
-      <div id="folder-data" data-folder-path='<%- JSON.stringify(folderPath || []) %>' hidden></div>
-    <% } %>
-
-    <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        const el = document.getElementById('folder-data');
-        if (!el) return;
-
-        const folderPath = JSON.parse(el.dataset.folderPath || '[]');
-
-        folderPath.forEach(folderId => {
-          const details = document.querySelector(`details[data-folder-id="${folderId}"]`);
-          if (details) details.open = true;
-        });
-
-        el.remove();
-      });
-    </script>
   </body>
 </html>
 
