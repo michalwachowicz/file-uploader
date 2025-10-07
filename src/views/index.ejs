@@ -24,7 +24,7 @@
               <% if (allFolders && allFolders.length > 0) { %>
                 <ul>
                   <% for (const folder of allFolders) { %>
-                    <%- include('partials/folder-tree', { node: folder }) %>
+                    <%- include('partials/folder-tree', { node: folder, folderPath: typeof folderPath !== 'undefined' ? folderPath : [] }) %>
                   <% } %>
                 </ul>
               <% } %>
@@ -34,8 +34,38 @@
       </aside>
 
       <section>
+        <nav aria-label="Breadcrumb" style="margin-bottom: 1rem;">
+          <a href="/">Home</a>
+          <% if (locals.breadcrumbs && breadcrumbs.length > 0) { %>
+            <% breadcrumbs.forEach(function(crumb) { %>
+              &nbsp;/&nbsp;<a href="/folder/<%= crumb.id %>"><%= crumb.name %></a>
+            <% }) %>
+          <% } %>
+        </nav>
+
         <%- include('partials/folder-table', { folders, files }) %>
       </section>
     </main>
+
+    <% if (locals.folderPath && locals.folderPath.length > 0) { %>
+      <div id="folder-data" data-folder-path='<%- JSON.stringify(folderPath || []) %>' hidden></div>
+    <% } %>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const el = document.getElementById('folder-data');
+        if (!el) return;
+
+        const folderPath = JSON.parse(el.dataset.folderPath || '[]');
+
+        folderPath.forEach(folderId => {
+          const details = document.querySelector(`details[data-folder-id="${folderId}"]`);
+          if (details) details.open = true;
+        });
+
+        el.remove();
+      });
+    </script>
   </body>
 </html>
+

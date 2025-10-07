@@ -37,6 +37,15 @@ export async function getFolder(req: Request, res: Response) {
   const allFolders = await FolderService.getFolderTreeForOwner(
     req.user?.id || ""
   );
+  const breadcrumbs = await FolderService.getFolderPathWithNames(folder.id);
+  const folderPath = breadcrumbs.map((b) => b.id);
 
-  render("index", res, req, { folder, allFolders, folders, files });
+  render("index", res, req, {
+    folder,
+    allFolders,
+    folders,
+    files,
+    folderPath,
+    breadcrumbs,
+  });
 }
