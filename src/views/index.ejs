@@ -21,15 +21,7 @@
       </aside>
 
       <section>
-        <nav aria-label="Breadcrumb" style="margin-bottom: 1rem;">
-          <a href="/">Home</a>
-          <% if (locals.breadcrumbs && breadcrumbs.length > 0) { %>
-            <% breadcrumbs.forEach(function(crumb) { %>
-              &nbsp;/&nbsp;<a href="/folder/<%= crumb.id %>"><%= crumb.name %></a>
-            <% }) %>
-          <% } %>
-        </nav>
-
+        <%- include('partials/breadcrumbs', { breadcrumbs }) %>
         <%- include('partials/folder-table', { folders, files }) %>
       </section>
     </main>

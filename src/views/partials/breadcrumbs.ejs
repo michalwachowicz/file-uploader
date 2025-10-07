@@ -1,0 +1,12 @@
+<nav>
+  <a href="/">Home</a>
+
+  <% if (locals.breadcrumbs && breadcrumbs.length > 0) { %>
+    <% breadcrumbs.forEach((crumb) => { %>
+      &nbsp;/&nbsp;
+      <a href="/folder/<%= crumb.id %>">
+        <%= crumb.name %>
+      </a>
+    <% }) %>
+  <% } %>
+</nav>
