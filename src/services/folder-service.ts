@@ -63,6 +63,26 @@ class FolderService {
     `;
     return rows[0]?.found === true;
   }
+
+  async getFolderPathWithNames(
+    folderId: string
+  ): Promise<Array<{ id: string; name: string }>> {
+    const rows = await prisma.$queryRaw<Array<{ id: string; name: string }>>`
+      WITH RECURSIVE ancestors AS (
+        SELECT "id", "parentId", "name", 0 AS depth
+        FROM "Folder"
+        WHERE "id" = ${folderId}::uuid
+        UNION ALL
+        SELECT f."id", f."parentId", f."name", a.depth + 1 AS depth
+        FROM "Folder" f
+        JOIN ancestors a ON a."parentId" = f."id"::uuid
+      )
+      SELECT "id", "name", depth
+      FROM ancestors
+      ORDER BY depth DESC;
+    `;
+    return rows.map((row) => ({ id: row.id, name: row.name }));
+  }
 }
 
 export default new FolderService();
