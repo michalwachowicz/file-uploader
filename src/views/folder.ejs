@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>
+    <%= locals.folder
+      ? `${locals.folder.name} | ${locals.user.username} | File Uploader`
+      : `${locals.user.username} | File Uploader`
+    %>
+  </title>
+</head>
+<body>
+  <%- include('partials/header') %>
+
+  <main>
+    <h1><%= locals.folder.name %></h1>
+
+    <section>
+      <%- include('partials/folder-table', { folders, files }) %>
+    </section>
+  </main>
+</body>
+</html>

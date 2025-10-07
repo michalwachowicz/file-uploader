@@ -1,7 +1,11 @@
 import prisma from "../prisma";
-import { Folder } from "@prisma/client";
+import { Folder, File } from "@prisma/client";
 
 export type FolderNode = Folder & { subfolders: FolderNode[] };
+export type FolderWithSubfoldersAndFiles = Folder & {
+  subfolders?: Folder[];
+  files?: File[];
+};
 
 class FolderService {
   async getFolderTreeForOwner(ownerId: string): Promise<FolderNode[]> {
@@ -29,11 +33,35 @@ class FolderService {
     return roots;
   }
 
-  async getFolderById(id: string): Promise<Folder | null> {
+  async getFolderById(
+    id: string
+  ): Promise<FolderWithSubfoldersAndFiles | null> {
     return await prisma.folder.findUnique({
       where: { id },
-      include: { subfolders: true, files: true },
+      include: {
+        subfolders: { where: { parentId: id } },
+        files: { where: { folderId: id } },
+      },
     });
+  }
+
+  async hasValidShareInAncestors(folder: Folder): Promise<boolean> {
+    const rows = await prisma.$queryRaw<Array<{ found: boolean }>>`
+      WITH RECURSIVE ancestors AS (
+        SELECT "id", "parentId", "shareExpiresAt"
+        FROM "Folder"
+        WHERE "id" = ${folder.id}::uuid
+        UNION ALL
+        SELECT f."id", f."parentId", f."shareExpiresAt"
+        FROM "Folder" f
+        JOIN ancestors a ON a."parentId" = f."id"::uuid
+      )
+      SELECT EXISTS (
+        SELECT 1 FROM ancestors
+        WHERE "shareExpiresAt" IS NOT NULL AND "shareExpiresAt" > NOW()
+      ) AS found;
+    `;
+    return rows[0]?.found === true;
   }
 }
 

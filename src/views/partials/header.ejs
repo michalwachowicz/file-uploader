@@ -1,0 +1,12 @@
+<header>
+  <h1>File Uploader</h1>
+
+  <% if (locals.isAuthenticated) { %>
+    <form action="/auth/logout" method="post">
+      <button type="submit" aria-label="Logout">Logout</button>
+    </form>
+  <% } else { %>
+    <a href="/auth/login">Login</a>
+    <a href="/auth/register">Register</a>
+  <% } %>
+</header>
