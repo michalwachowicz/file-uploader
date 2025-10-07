@@ -1,0 +1,30 @@
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Date modified</th>
+      <th>File size</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% if (folders && folders.length > 0) { %>
+      <% for (const folder of folders) { %>
+        <tr>
+          <td><%= folder.name %></td>
+          <td><%= new Date(folder.updatedAt).toLocaleString() %></td>
+          <td>-</td>
+        </tr>
+      <% } %>
+    <% } %>
+
+    <% if (files && files.length > 0) { %>
+      <% for (const file of files) { %>
+        <tr>
+          <td><%= file.name %></td>
+          <td><%= new Date(file.updatedAt).toLocaleString() %></td>
+          <td><%= file.sizeBytes != null ? file.sizeBytes : '-' %></td>
+        </tr>
+      <% } %>
+    <% } %>
+  </tbody>
+</table>
