@@ -1,0 +1,74 @@
+<div class="new-menu">
+  <button id="new-menu-btn" aria-haspopup="menu" aria-expanded="false">
+    New
+  </button>
+
+  <ul id="new-menu" role="menu" hidden>
+    <li role="none">
+      <button type="button" role="menuitem" id="action-new-folder">
+        New folder
+      </button>
+    </li>
+
+    <li role="none">
+      <button type="button" role="menuitem" id="action-new-file">
+        New file
+      </button>
+    </li>
+  </ul>
+</div>
+
+<script defer>
+  document.addEventListener('DOMContentLoaded', () => {
+    const menuContainer = document.querySelector('.new-menu');
+    const newBtn = document.querySelector('#new-menu-btn');
+    const newMenu = document.querySelector('#new-menu');
+    const newFolderBtn = document.querySelector('#action-new-folder');
+    const newFileBtn = document.querySelector('#action-new-file');
+
+    function openMenu() {
+      if (!newMenu) return;
+
+      newMenu.hidden = false;
+      newBtn?.setAttribute('aria-expanded', 'true');
+    }
+
+    function closeMenu() {
+      if (!newMenu) return;
+
+      newMenu.hidden = true;
+      newBtn?.setAttribute('aria-expanded', 'false');
+    }
+
+    newBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+
+      if (!newMenu) return;
+      const isOpen = newMenu.hidden === false;
+      
+      if (isOpen) closeMenu();
+      else openMenu();
+    });
+
+    menuContainer?.addEventListener('mouseenter', openMenu);
+    menuContainer?.addEventListener('mouseleave', closeMenu);
+
+    document.addEventListener('click', (e) => {
+      if (menuContainer && !menuContainer.contains(e.target)) {
+       closeMenu();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeMenu();
+    });
+
+    newFolderBtn?.addEventListener('click', () => {
+      closeMenu();
+    });
+
+    newFileBtn?.addEventListener('click', () => {
+      closeMenu();
+    });
+  });
+</script>

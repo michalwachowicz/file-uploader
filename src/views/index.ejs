@@ -15,8 +15,7 @@
 
     <main>
       <aside>
-        <button>New</button>
-
+        <%- include('partials/new-menu') %>
         <%- include('partials/folder-tree', { isRoot: true, allFolders, folderPath: typeof folderPath !== 'undefined' ? folderPath : [] }) %>
       </aside>
 
