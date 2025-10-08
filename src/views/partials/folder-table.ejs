@@ -9,7 +9,7 @@
   <tbody>
     <% if (folders && folders.length > 0) { %>
       <% for (const folder of folders) { %>
-        <tr>
+        <tr data-folder-id="<%= folder.id %>" class="clickable-row" tabindex="0" role="button" aria-label="Open folder <%= folder.name %>">
           <td><%= folder.name %></td>
           <td><%= new Date(folder.updatedAt).toLocaleString() %></td>
           <td>-</td>
@@ -19,7 +19,7 @@
 
     <% if (files && files.length > 0) { %>
       <% for (const file of files) { %>
-        <tr>
+        <tr data-file-id="<%= file.id %>" class="clickable-row" tabindex="0" role="button" aria-label="Open file <%= file.name %>">
           <td><%= file.name %></td>
           <td><%= new Date(file.updatedAt).toLocaleString() %></td>
           <td><%= file.sizeBytes != null ? file.sizeBytes : '-' %></td>
@@ -28,3 +28,23 @@
     <% } %>
   </tbody>
 </table>
+
+<script defer>
+  const rows = document.querySelectorAll('.clickable-row');
+  
+  rows.forEach(row => {
+    row.addEventListener('click', (e) => {
+      e.preventDefault();
+
+      const folderId = row.dataset.folderId;
+      if (folderId) window.location.href = `/folders/${folderId}`;
+    });
+
+    row.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        row.click();
+      }
+    });
+  });
+</script>
