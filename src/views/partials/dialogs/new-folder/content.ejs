@@ -1,4 +1,9 @@
 <form action="/folders" method="post">
-  <%- include('../../field', { name: 'name', label: 'Name', errors: locals.errors }) %>
+  <% if (locals.folder) { %>
+    <input type="hidden" name="parentId" value="<%= locals.folder.id %>" />
+  <% } %>
+
+  <%- include('../../field', { name: 'folderName', label: 'Name', errors: locals.errors }) %>
+
   <button type="submit">Create</button>
 </form>

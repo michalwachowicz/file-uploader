@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
-import render from "../utils/renderer";
+import { render, renderIndex } from "../utils/renderer";
 import FolderService from "../services/folder-service";
+import { createFolderSchema } from "../schemas/folder-schema";
+import { formatZodErrors } from "../utils/zod-formatter";
 
 export async function getFolder(req: Request, res: Response) {
   const folder = await FolderService.getFolderById(req.params.id || "");
@@ -11,9 +13,6 @@ export async function getFolder(req: Request, res: Response) {
       message: "Folder not found",
     });
   }
-
-  const folders = folder.subfolders || [];
-  const files = folder.files || [];
 
   const isOwner = folder.ownerId === req.user?.id;
 
@@ -28,24 +27,74 @@ export async function getFolder(req: Request, res: Response) {
     } else {
       return render("folder", res, req, {
         folder,
-        folders,
-        files,
+        folders: folder.subfolders || [],
+        files: folder.files || [],
       });
     }
   }
 
-  const allFolders = await FolderService.getFolderTreeForOwner(
-    req.user?.id || ""
-  );
-  const breadcrumbs = await FolderService.getFolderPathWithNames(folder.id);
-  const folderPath = breadcrumbs.map((b) => b.id);
+  renderIndex(res, req, { folder });
+}
 
-  render("index", res, req, {
-    folder,
-    allFolders,
-    folders,
-    files,
-    folderPath,
-    breadcrumbs,
-  });
+export async function createFolder(req: Request, res: Response) {
+  if (!req.user) {
+    return render("error", res, req, {
+      status: 401,
+      message: "Unauthorized",
+    });
+  }
+
+  const ownerId = req.user.id;
+  const { error, data } = createFolderSchema.safeParse(req.body);
+
+  if (error) {
+    return renderIndex(res, req, {
+      errors: formatZodErrors(error),
+      folder: req.body.parentId
+        ? (await FolderService.getFolderById(req.body.parentId)) || undefined
+        : undefined,
+    });
+  }
+
+  const { folderName } = data;
+  const { parentId } = req.body;
+
+  if (parentId) {
+    const parentFolder = await FolderService.getFolderById(parentId);
+
+    if (!parentFolder) {
+      return render("error", res, req, {
+        status: 404,
+        message: "Parent folder not found",
+      });
+    }
+
+    if (parentFolder.ownerId !== ownerId) {
+      return render("error", res, req, {
+        status: 403,
+        message: "You are not allowed to create a folder in this parent folder",
+      });
+    }
+  }
+
+  const existingFolder = await FolderService.getFolderByNameInParent(
+    folderName,
+    parentId || null,
+    ownerId
+  );
+
+  if (existingFolder) {
+    return renderIndex(res, req, {
+      errors: {
+        folderName: "A folder with this name already exists",
+      },
+    });
+  }
+
+  const folder = await FolderService.createFolder(
+    ownerId,
+    folderName,
+    parentId
+  );
+  res.redirect(`/folders/${folder.id}`);
 }
