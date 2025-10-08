@@ -18,6 +18,9 @@
   </ul>
 </div>
 
+<%- include('dialogs/new-folder/index') %>
+<%- include('dialogs/new-file/index') %>
+
 <script defer>
   document.addEventListener('DOMContentLoaded', () => {
     const menuContainer = document.querySelector('.new-menu');
@@ -65,10 +68,12 @@
 
     newFolderBtn?.addEventListener('click', () => {
       closeMenu();
+      openDialog('new-folder-dialog');
     });
 
     newFileBtn?.addEventListener('click', () => {
       closeMenu();
+      openDialog('new-file-dialog');
     });
   });
 </script>

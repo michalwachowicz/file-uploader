@@ -1,0 +1,29 @@
+<% /*
+  Required locals:
+    - id: string (unique DOM id)
+    - title: string
+  Optional locals:
+    - bodyPartial: string (path to a partial to render inside body)
+    - bodyData: object (locals for the body partial)
+*/ %>
+
+<div
+  id="<%= id %>"
+  class="dialog"
+  aria-hidden="false"
+  style="display: none;"
+  data-dialog
+>
+  <div class="dialog__backdrop" data-dialog-backdrop></div>
+
+  <div class="dialog__panel" role="dialog" aria-modal="true" aria-labelledby="<%= id %>-title">
+    <header class="dialog__header">
+      <h2 id="<%= id %>-title" class="dialog__title"><%= title %></h2>
+      <button type="button" class="dialog__close" data-dialog-close aria-label="Close">×</button>
+    </header>
+
+    <div class="dialog__body">
+      <%- include(bodyPartial, (typeof bodyData !== 'undefined' ? bodyData : {})) %>
+    </div>
+  </div>
+</div>

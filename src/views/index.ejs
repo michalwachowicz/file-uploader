@@ -24,6 +24,46 @@
         <%- include('partials/folder-table', { folders, files }) %>
       </section>
     </main>
+
+    <script>
+        const dialogs = Array.from(document.querySelectorAll('[data-dialog]'));
+
+        dialogs.forEach((root) => {
+          const close = () => {
+            root.style.display = 'none';
+            root.setAttribute('aria-hidden', 'true');
+          };
+
+          const open = () => {
+            root.style.display = '';
+            root.setAttribute('aria-hidden', 'false');
+          };
+
+          root.dataset.dialogOpen = open;
+          root.dataset.dialogClose = close;
+
+          root.querySelector('[data-dialog-backdrop]')?.addEventListener('click', close);
+          root.querySelector('[data-dialog-close]')?.addEventListener('click', close);
+        });
+
+        function openDialog(id) {
+          const el = document.getElementById(id);
+          if (!el) return;
+
+          el.style.display = '';
+          el.setAttribute('aria-hidden', 'false');
+          el.classList.add('dialog--open');
+        };
+
+        function closeDialog(id) {
+          const el = document.getElementById(id);
+          if (!el) return;
+
+          el.style.display = 'none';
+          el.setAttribute('aria-hidden', 'true');
+          el.classList.remove('dialog--open');
+        };
+    </script>
   </body>
 </html>
 
