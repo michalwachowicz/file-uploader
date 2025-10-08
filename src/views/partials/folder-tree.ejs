@@ -46,7 +46,7 @@
     <% if (node.subfolders && node.subfolders.length) { %>
       <details data-folder-id="<%= node.id %>">
         <summary>
-          <a href="/folder/<%= node.id %>"><%= node.name %></a>
+          <a href="/folders/<%= node.id %>"><%= node.name %></a>
         </summary>
 
         <ul>
@@ -61,7 +61,7 @@
         </ul>
       </details>
     <% } else { %>
-      <a href="/folder/<%= node.id %>"><%= node.name %></a>
+      <a href="/folders/<%= node.id %>"><%= node.name %></a>
     <% } %>
   </li>
 <% } %>

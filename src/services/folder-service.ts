@@ -83,6 +83,30 @@ class FolderService {
     `;
     return rows.map((row) => ({ id: row.id, name: row.name }));
   }
+
+  async createFolder(
+    ownerId: string,
+    name: string,
+    parentId?: string
+  ): Promise<Folder> {
+    return await prisma.folder.create({
+      data: { ownerId, name, parentId },
+    });
+  }
+
+  async getFolderByNameInParent(
+    name: string,
+    parentId: string | null,
+    ownerId: string
+  ): Promise<Folder | null> {
+    return await prisma.folder.findFirst({
+      where: {
+        name,
+        parentId,
+        ownerId,
+      },
+    });
+  }
 }
 
 export default new FolderService();

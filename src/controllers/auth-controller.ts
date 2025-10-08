@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import passport from "passport";
 import bcrypt from "bcrypt";
-import render from "../utils/renderer";
 import UserService from "../services/user-service";
-import { registerSchema, loginSchema } from "../schemas/auth-schemas";
+import { render } from "../utils/renderer";
+import { registerSchema, loginSchema } from "../schemas/auth-schema";
 import { formatZodErrors } from "../utils/zod-formatter";
 import { User } from "@prisma/client";
 

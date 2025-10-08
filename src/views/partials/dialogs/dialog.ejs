@@ -1,17 +1,10 @@
-<% /*
-  Required locals:
-    - id: string (unique DOM id)
-    - title: string
-  Optional locals:
-    - bodyPartial: string (path to a partial to render inside body)
-    - bodyData: object (locals for the body partial)
-*/ %>
+<% const isDialogOpen = typeof isOpen !== 'undefined' ? isOpen : false; %>
 
 <div
   id="<%= id %>"
-  class="dialog"
-  aria-hidden="false"
-  style="display: none;"
+  class="dialog <%= isDialogOpen ? 'dialog--open' : '' %>"
+  aria-hidden="<%= isDialogOpen ? 'false' : 'true' %>"
+  style="display: <%= isDialogOpen ? 'block' : 'none' %>"
   data-dialog
 >
   <div class="dialog__backdrop" data-dialog-backdrop></div>
