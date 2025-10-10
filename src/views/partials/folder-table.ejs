@@ -1,40 +1,91 @@
+<% const isRoot = !locals.folder; %>
+<% const isOwner = isRoot ? true : (locals.folder?.ownerId === locals.user?.id); %>
+
 <table>
   <thead>
     <tr>
       <th>Name</th>
       <th>Date modified</th>
       <th>File size</th>
+      <% if (isOwner) { %>
+        <th></th>
+      <% } %>
     </tr>
   </thead>
   <tbody>
     <% if (folders && folders.length > 0) { %>
       <% for (const folder of folders) { %>
-        <tr data-folder-id="<%= folder.id %>" class="clickable-row" tabindex="0" role="button" aria-label="Open folder <%= folder.name %>">
+        <tr
+          data-folder-id="<%= folder.id %>"
+          class="clickable-row"
+          tabindex="0"
+          role="button"
+          aria-label="Open folder <%= folder.name %>"
+        >
           <td><%= folder.name %></td>
           <td><%= new Date(folder.updatedAt).toLocaleString() %></td>
           <td>-</td>
+          <% if (isOwner) { %>
+            <td>
+              <%- include('action-menu', { target: 'folder', id: folder.id }) %>
+            </td>
+          <% } %>
         </tr>
       <% } %>
     <% } %>
 
     <% if (files && files.length > 0) { %>
       <% for (const file of files) { %>
-        <tr data-file-id="<%= file.id %>" class="clickable-row" tabindex="0" role="button" aria-label="Open file <%= file.name %>">
+        <tr
+          data-file-id="<%= file.id %>"
+          class="clickable-row"
+          tabindex="0"
+          role="button"
+          aria-label="Open file <%= file.name %>"
+        >
           <td><%= file.name %></td>
           <td><%= new Date(file.updatedAt).toLocaleString() %></td>
           <td><%= file.sizeBytes != null ? file.sizeBytes : '-' %></td>
+          <% if (isOwner) { %>
+            <td>
+              <%- include('action-menu', { target: 'file', id: file.id }) %>
+            </td>
+          <% } %>
         </tr>
       <% } %>
     <% } %>
   </tbody>
 </table>
 
+<div id="is-owner-store" data-is-owner="<%= isOwner %>"></div>
+
+<% if (isOwner) { %>
+  <%- include('dialogs/rename-item/index') %>
+  <%- include('dialogs/delete-item/index') %>
+<% } %>
+
 <script defer>
   const rows = document.querySelectorAll('.clickable-row');
-  
-  rows.forEach(row => {
+
+  const isMenuOpen = () => {
+    const openMenu = document.querySelector('.action-menu[style*="block"]');
+    return openMenu !== null;
+  };
+
+  const isFromMenuOrTrigger = (target) => {
+    return !!(
+      target &&
+      target.closest &&
+      (target.closest('.action-menu') || target.closest('.action-menu-trigger'))
+    );
+  };
+
+  rows.forEach((row) => {
     row.addEventListener('click', (e) => {
+      if (isFromMenuOrTrigger(e.target)) return;
+
       e.preventDefault();
+      if (isMenuOpen()) return;
 
       const folderId = row.dataset.folderId;
       if (folderId) window.location.href = `/folders/${folderId}`;
@@ -43,8 +94,110 @@
     row.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
+        if (isFromMenuOrTrigger(e.target) || isMenuOpen()) return;
+
         row.click();
       }
     });
   });
 </script>
+
+<% if (isOwner) { %>
+  <script defer>
+    document.addEventListener('DOMContentLoaded', function () {
+      function closeAllMenus() {
+        const openMenus = document.querySelectorAll('.action-menu[style*="block"]');
+        openMenus.forEach((menu) => (menu.style.display = 'none'));
+      }
+
+      function openDialogById(dialogId) {
+        const dialog = document.getElementById(dialogId);
+        if (!dialog) return;
+
+        dialog.style.display = 'block';
+        dialog.classList.add('dialog--open');
+        dialog.setAttribute('aria-hidden', 'false');
+      }
+
+      const actionMenuTriggers = document.querySelectorAll('.action-menu-trigger');
+      actionMenuTriggers.forEach((trigger) => {
+        trigger.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          closeAllMenus();
+
+          const menu = trigger.nextElementSibling;
+
+          if (menu && menu.classList.contains('action-menu')) {
+            const currentDisplay = menu.style.display;
+            menu.style.display = currentDisplay === 'block' ? 'none' : 'block';
+          }
+        });
+      });
+
+      document.addEventListener('click', (e) => {
+        if (
+          !e.target.closest('.action-menu-trigger') &&
+          !e.target.closest('.action-menu')
+        ) {
+          closeAllMenus();
+        }
+      });
+
+      document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('action-rename')) {
+          const menu = e.target.closest('.action-menu');
+          const trigger = menu.previousElementSibling;
+          const target = trigger.dataset.target;
+          const id = trigger.dataset.id;
+
+          closeAllMenus();
+
+          const form = document.getElementById('rename-item-form');
+          const idInput = document.getElementById('rename-item-id');
+          if (form && idInput) {
+            idInput.value = id;
+            form.action =
+              target === 'folder'
+                ? `/folders/${id}/rename`
+                : `/files/${id}/rename`;
+          }
+
+          openDialogById('rename-item-dialog');
+        }
+
+        if (e.target.classList.contains('action-delete')) {
+          const menu = e.target.closest('.action-menu');
+          const trigger = menu.previousElementSibling;
+          const target = trigger.dataset.target;
+          const id = trigger.dataset.id;
+
+          closeAllMenus();
+
+          const form = document.querySelector('#delete-item-form');
+          const idInput = document.querySelector('#delete-item-id');
+          const messageEl = document.querySelector('#delete-item-message');
+          const titleEl = document.querySelector('#delete-item-dialog-title');
+          if (form && idInput) {
+            idInput.value = id;
+            form.action = target === 'folder' ? `/folders/${id}` : `/files/${id}`;
+          }
+
+          titleEl.textContent = `Delete ${target.charAt(0).toUpperCase() + target.slice(1)}`;
+
+          if (messageEl) {
+            if (target === 'folder') {
+              messageEl.textContent =
+                'Are you sure you want to delete this folder? All contents inside this folder will also be deleted.';
+            } else {
+              messageEl.textContent =
+                'Are you sure you want to delete this file? This action is irreversible.';
+            }
+          }
+
+          openDialogById('delete-item-dialog');
+        }
+      });
+    });
+  </script>
+<% } %>
