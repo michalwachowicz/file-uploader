@@ -1,0 +1,10 @@
+<form id="rename-item-form" method="put">
+  <input type="hidden" name="_method" value="PATCH" />
+  <input type="hidden" name="id" id="rename-item-id" />
+
+  <%- include('../../field', { name: 'name', label: 'New name', errors: locals.errors }) %>
+
+  <button type="submit">Rename</button>
+</form>
+
+
