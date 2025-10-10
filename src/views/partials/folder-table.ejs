@@ -180,7 +180,7 @@
           const titleEl = document.querySelector('#delete-item-dialog-title');
           if (form && idInput) {
             idInput.value = id;
-            form.action = target === 'folder' ? `/folders/${id}` : `/files/${id}`;
+            form.action = target === 'folder' ? `/folders/${id}/delete` : `/files/${id}/delete`;
           }
 
           titleEl.textContent = `Delete ${target.charAt(0).toUpperCase() + target.slice(1)}`;

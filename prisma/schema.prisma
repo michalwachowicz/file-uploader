@@ -48,7 +48,7 @@ model File {
   ownerId        String    @db.Uuid
   owner          User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   folderId       String?   @db.Uuid
-  folder         Folder?   @relation(fields: [folderId], references: [id])
+  folder         Folder?   @relation(fields: [folderId], references: [id], onDelete: Cascade)
   shareExpiresAt DateTime?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt

@@ -98,3 +98,32 @@ export async function createFolder(req: Request, res: Response) {
   );
   res.redirect(`/folders/${folder.id}`);
 }
+
+export async function deleteFolder(req: Request, res: Response) {
+  if (!req.user) {
+    return render("error", res, req, {
+      status: 401,
+      message: "Unauthorized",
+    });
+  }
+
+  const folder = await FolderService.getFolderById(req.params.id || "");
+
+  if (!folder) {
+    return render("error", res, req, {
+      status: 404,
+      message: "Folder not found",
+    });
+  }
+
+  if (folder.ownerId !== req.user.id) {
+    return renderIndex(res, req, {
+      errors: {
+        deleteItem: "You are not allowed to delete this folder",
+      },
+    });
+  }
+
+  await FolderService.deleteFolder(req.params.id || "");
+  res.redirect(folder.parentId ? `/folders/${folder.parentId}` : "/");
+}

@@ -107,6 +107,10 @@ class FolderService {
       },
     });
   }
+
+  async deleteFolder(id: string): Promise<void> {
+    await prisma.folder.delete({ where: { id } });
+  }
 }
 
 export default new FolderService();
