@@ -5,7 +5,7 @@
     type="<%= typeof type !== "undefined" ? type : "text" %>"
     name="<%= name %>"
     id="<%= name %>"
-    <%= typeof value !== "undefined" ? `value="${value}"` : "" %>
+    <% if (typeof value !== "undefined") { %>value="<%= value %>"<% } %>
     class="<%= errors && errors[name] ? 'input-error' : '' %>"
   />
 

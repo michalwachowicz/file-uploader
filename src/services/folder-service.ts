@@ -111,6 +111,39 @@ class FolderService {
   async deleteFolder(id: string): Promise<void> {
     await prisma.folder.delete({ where: { id } });
   }
+
+  async renameFolder(
+    id: string,
+    newName: string,
+    ownerId: string
+  ): Promise<Folder> {
+    const folder = await prisma.folder.findUnique({
+      where: { id },
+    });
+
+    if (!folder) {
+      throw new Error("Folder not found");
+    }
+
+    if (folder.ownerId !== ownerId) {
+      throw new Error("You are not allowed to rename this folder");
+    }
+
+    const existingFolder = await this.getFolderByNameInParent(
+      newName,
+      folder.parentId,
+      ownerId
+    );
+
+    if (existingFolder && existingFolder.id !== id) {
+      throw new Error("A folder with this name already exists");
+    }
+
+    return await prisma.folder.update({
+      where: { id },
+      data: { name: newName },
+    });
+  }
 }
 
 export default new FolderService();
